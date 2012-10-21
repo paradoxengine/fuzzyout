@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>Edward Sazonov: A Java Fuzzy Engine Example - Preventing Load Sway</TITLE>
+<base target="_self">
+</HEAD>
+
+
+<BODY link="#00FF00" vlink="#008000" bgcolor="#000000" text="#FFFFFF">
+<p align="center"><font color="#66FFFF" size="6"><em><strong>Prevention of Load
+Sway by a Fuzzy Controller</strong></em></font>
+<p align="center"><b><font color="#008080">Manual controls: Arrow Right -
+increase the power; Arrow Left - decrease the power;<br>
+Space - stop the crane; Arrow Up - lift the load; Arrow Down - lower the load;<br>
+Enter - lock the load.</font></b></p>
+<p align="center"><b><font color="#FFFF00">Changes in the rules become effective
+upon clicking on the &quot;Fuzzy Control&quot; button.<br>
+</font><font color="#00FF00">&quot;Fuzzy Control&quot; </font><font color="#008080">indicates
+errorless parsing and evaluation of the rules.<br>
+</font><font color="#FF0000">&quot;Fuzzy Control&quot; </font><font color="#008080">indicates
+an error in the rules.</font></b></p>
+<p align="center">
+<APPLET CODE=LoadSway.class ARCHIVE=export.jar WIDTH=600 HEIGHT=380 >
+This applet requires a Java-enabled browser
+</APPLET>
+</p>
+<p align="center"><b><font color="#008080">The fuzzy rules controlling the crane
+can be changed at any time and will become effective upon the next click on
+&quot;Fuzzy Control&quot; button. Three linguistic variables have been defined:
+angle, distance and power. The linguistic variables and&nbsp; membership
+functions cannot be changed interactively. </font></b></p>
+<p align="center"><img border="0" src="angle.gif" width="693" height="161"><br>
+<img border="0" src="distance.gif" width="692" height="164"><br>
+<img border="0" src="power.gif" width="693" height="178"></p>
+<p align="center"><font color="#008080"><b>Unlike the <a href="http://www.fuzzytech.com/e/e_a_pfd.html">FuzzyTech
+example</a> that works only in one direction of motion or <a href="http://www.aimax.com/industry/mforum/fuzzy/2_1.htm">Omron
+example</a> that utilizes complicated anti-sway rules, the given model employs
+two very simple rules that compensate load sway at the distances close to the
+destination. For each swing of the load, the crane's trolley is moved in the
+swing direction to reduce the amplitude. The system's behavior&nbsp; without the
+compensation for the load sway can be observed by removing the last two rules in
+the set (last four lines in the rule area). </b></font></p>
+</BODY>
+</HTML>

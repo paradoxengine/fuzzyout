@@ -1,0 +1,211 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (X11; I; Linux 2.2.14-15mdk i686) [Netscape]">
+</head>
+<body>
+
+<center>
+<h1>
+Fuzzy engine for Java</h1></center>
+
+<blockquote>This fuzzy engine is designed to perform fuzzy evaluations
+in Java programs. It is not a fuzzy system shell but rather a set of classes
+and methods allowing evaluation of fuzzy rules given in the symbolic form.
+Current implementation of the fuzzy engine allows tight integration of
+the fuzzy reasoning into Java software, where all evaluations are performed
+by the fuzzy engine, while manipulation of the control flow and input-output
+operations are performed in Java. Such a structure allows significantly
+higher performance than a shell concept. The engine supports evaluation
+of fuzzy rules in the symbolic form; fuzzy and/or/not operations; arbitrary
+nesting of fuzzy expressions in the left part of a rule; multiple assignment
+operations in the right part of a rule; predefined and user-defined hedges;
+unconditional assignment operations; dynamically weighted rules; evaluation
+of single rules or rule blocks.</blockquote>
+
+<center>
+<h1>
+Linguistic Variables and Membership Functions</h1></center>
+
+<blockquote>Linguistic variables represent a part that closely interacts
+both to Java code and fuzzy rules. The same linguistic variable can participate
+in fuzzy evaluations performed by different fuzzy engines. Each fuzzy assignment
+will be accounted for during defuzzification. Each linguistic variable
+has an arbitrary number of associated membership functions: each membership
+function is represented by a trapezoid. Trapezoidal membership functions
+allow simple implementation of the most widely used forms: rectangle, triangle
+and trapezoid.
+<p>Creating a linguistic variable takes two steps:
+<blockquote>1. Allocation of a linguistic variable
+<br><b>Example: </b><tt>LinguisticVariable angle = new LinguisticVariable("angle");</tt>
+<br>The String argument will be used to address this particular linguistic
+variable in the rules (if angle is ...).
+<p>2. Definition of membership functions
+<br><b>Example: </b><tt>angle.add("negative", -3.14, -3.14, 0.0314, 0);</tt></blockquote>
+"negative" here is the name which will be used to address this membership
+function (if angle is negative ...), other four parameters define four
+key points of a trapezoid. They follow in the order of left bottom, left
+top, right top and right bottom points.</blockquote>
+
+<center>
+<h1>
+Hedges</h1></center>
+
+<blockquote>Hedges allow to express different degrees of membership in
+a fuzzy set. The package has three predefined hedges:
+<blockquote>"not" -<img SRC="image002.gif" height=24 width=83>
+<br>"very" -<img SRC="image004.gif" height=27 width=72>
+<br>"somewhat" -<img SRC="image006.gif" height=27 width=100></blockquote>
+Arbitrary hedges can be defined by deriving classes from the base class
+Hedge. Method getName() should return a string containing the hedge name.
+Method hedgeIt() should perform the desired hedge operation.</blockquote>
+
+<center>
+<h2>
+Fuzzy Rules</h2></center>
+
+<blockquote>All fuzzy evaluations are based on the rules in the symbolic
+representation. Linguistic variables, membership functions, hedges and
+fuzzy operations are referenced by their respective symbolic names. Symbolic
+representation of the rules allows easy understanding of the rules and
+simplifies the debugging process. Fuzzy rules are represented by text strings
+in the following format:
+<blockquote><tt>&lt;label> if LV1 is &lt;hedge ...> MF1 &lt;and/or LV2
+is &lt;hedge ...> MF2 and/or ...> then LVN is &lt;hedge ...> MFN ... &lt;
+and rule label weight is &lt;hedge ...> weightMF></tt>
+<p><tt>&lt;label> set LV1 is &lt;hedge ...> MF1 &lt;and LV2 is &lt;hedge
+...> MF2 ...> &lt;and rule label weight is &lt;hedge ...> weightMF></tt></blockquote>
+<b>"label"</b> - a text label assigned to a rule. A rule's weight (default
+is 1.0) is changed by executing expression <tt>"rule label weight is weightMF"</tt>
+in the right part of a rule. The same label can be assigned to more than
+one rule. In this case weight change will affect all of the labeled rules.
+<blockquote><b>Example:</b> <u>start:</u> if angle is ...</blockquote>
+<b>"if"</b> - a service word indicating the beginning of the left part
+(evaluation part) of a fuzzy rule.
+<p><b>"LV"</b> - a linguistic variable. Linguistic variables are addressed
+by their names. Each linguistic variable has one or more associated membership
+functions.
+<p><b>"is"</b> - a service word separating linguistic variable and hedges/membership
+function.
+<p><b>"hedge"</b> - the engine has 3 predefined hedges: "not", "very" and
+"somewhat". The user can define arbitrary hedges and use them in rules.
+<blockquote><b>Example:</b> if weather is <b><u>not</u></b> <b><u>very</u></b>
+nice ...</blockquote>
+<b>"MF"</b> - a membership function. Membership functions are addressed
+by their names. Each membership function is defined as a trapezoid.
+<p><b>"and/or"</b> - service words indicating logical operation to be performed
+on the neighboring fuzzy expressions. Priority of the and/or operations
+decreases from left to right and may be changed by applying parenthesis.
+The engine supports arbitrary number of expressions on the left part, arbitrary
+nesting and and/or operations.
+<blockquote><b>Example:</b> <tt>if angle is wide or (angle is normal and
+(speed is high or speed is normal)) ...</tt></blockquote>
+<b>"then"</b> - a service word separating left part of expression from
+the right part (execution part). Result obtained from evaluation of the
+left part is used to perform fuzzy assignments in the right part. The form
+of fuzzy expressions is the same as in the evaluation part, except assignment
+is performed instead of evaluation. During the assignment, hedges apply
+to the result of evaluation part. Application of the hedges is local for
+each fuzzy expression. If more than one assignment is to be performed,
+then fuzzy expression should separated by the service word <b>"and"</b>
+<blockquote><b>Example:</b> <tt>...then power is very low and steering
+is toTheLeft</tt></blockquote>
+<b>"rule"</b> - a service word indication that a rule's weight will be
+changed in this expression. This word is followed by a label for the rule
+whose weight is about to be changed.
+<blockquote><b>Example:</b> <tt>... then rule start: weight is low ...</tt></blockquote>
+<b>"weight"</b> - this is a reserved linguistic variable. Linguistic variable
+<b>"weight"</b>
+is defined by the user and serves for the purpose of changing a rule's
+weight. A copy of this LV is created for each unique label. Changes of
+weight are performed by defuzzification of the copy assigned to a particular
+label, thus multiple weight changes are carried out in fuzzy manner. How
+much a rule's weight will be changed depends both on definition of membership
+functions for <b>"weight"</b>, evaluation result after application of hedges
+and number of assignments.
+<blockquote><b>Example:</b> <tt>LinguisticVariable weight=new LinguisticVariable("weight");</tt>
+<br><tt>weight.add("low",0,0,0.2,0.3);</tt>
+<br><tt>...</tt>
+<br><tt>fuzzyEngine.evaluateRule("start: if angle is wide then rule start:
+weight is low");</tt></blockquote>
+&nbsp;When weight assignment is performed on the same rule that assigns
+the weight (see Example) then only one iteration of weight change is performed,
+i.e. it does not fall into an endless loop of weight change.
+<p><b>"set"</b> - a service word for unconditional assignments. If <b>"set"</b>
+is encountered instead of <b>"if"</b>, result of the left part evaluation
+is assumed to be 1.0 and all assignments are performed for that value.
+<blockquote><b>Example:</b> <tt>set power is low ...</tt></blockquote>
+</blockquote>
+
+<center>
+<h1>
+The Fuzzy engine</h1></center>
+
+<blockquote>All fuzzy evaluations are performed by a fuzzy engine. This
+Java class allows parsing and evaluation of fuzzy rules. The following
+example illustrates the main steps necessary for performing a fuzzy evaluation:
+<blockquote>1. Create Lingustic variables and define membership functions
+<br><tt>LinguisticVariable angle = new LinguisticVariable(?angle?);</tt>
+<br><tt>angle.add(?negative?,-3.14,-3.14,0,0);</tt>
+<br><tt>angle.add(?positive?,0,0,3.14,3.14);</tt>
+<br><tt>LinguisticVariable power = new LinguisticVariable(?power?);</tt>
+<br><tt>power.add(?decreased?,-2,-1,-1,0);</tt>
+<br><tt>power.add(?increased?,0,1,1,2);</tt>
+<p>2. Create a fuzzy engine
+<br><tt>fuzzyEngine = new FuzzyEngine();</tt>
+<p>3. Register all LVs
+<br><tt>fuzzyEngine.register(angle);</tt>
+<br><tt>fuzzyEngine.register(power);</tt>
+<p>4. Peform fuzzy evaluations
+<br><tt>fuzzyEngine.evaluateRule("if angle is negative then power is increased");</tt>
+<p>5. Obtain the result(s)
+<br><tt>double result = power.defuzzify();</tt></blockquote>
+A fuzzy engine can only parse and evaluate the rules that have been registered
+with the engine. A linguistic variable can be registered with more than
+one engine.</blockquote>
+
+<center>
+<h1>
+Blocks of rules</h1></center>
+
+<blockquote>The engine's function evaluateRule() performs parsing the string
+argument each time it is called. This leads to the waste of computing time
+and slows down the evaluation process. Class FuzzyBlockOfRules allows to
+increase execution speed by an order of magnitude by storing pre-parsed
+and optimized rules. The usage of BlockOfFuzzyRules is effective when a
+group of rules is evaluated over and over. The steps to use a block or
+rules:
+<blockquote>1. Create Lingustic variables and define membership functions
+<br><tt>LinguisticVariable angle = new LinguisticVariable("angle");</tt>
+<br><tt>angle.add("negative",-3.14,-3.14,0,0);</tt>
+<br><tt>angle.add("positive",0,0,3.14,3.14);</tt>
+<br><tt>LinguisticVariable power = new LinguisticVariable("power");</tt>
+<br><tt>power.add("decreased",-2,-1,-1,0);</tt>
+<br><tt>power.add("increased",0,1,1,2);</tt>
+<p>2. Create a fuzzy engine
+<br><tt>fuzzyEngine = new FuzzyEngine();</tt>
+<p>3. Register all LVs
+<br><tt>fuzzyEngine.register(angle);</tt>
+<br><tt>fuzzyEngine.register(power);</tt>
+<p>4. Create a block of rules
+<br><tt>fuzzyBlockOfRules = new FuzzyBlockOfRules("if angle is negative
+then power is increased");</tt>
+<p>5. Register the block
+<br><tt>fuzzyEngine.register(fuzzyBlockOfRules);</tt>
+<p>6. Parse the rules
+<br><tt>fuzzyBlockOfRules.parseBlock();</tt>
+<p>7. Perform the evaluation
+<br><tt>fuzzyBlockOfRules.evaluateBlock();</tt> - faster execution
+<br><tt>fuzzyBlockOfRules.evaluateBlockText();</tt> - slower execution,
+returns a String with evaluation results for every fuzzy expression
+<p>8. Obtain the result(s)
+<br><tt>double result = power.defuzzify();</tt>
+<br>&nbsp;
+<h2>
+<a href="Example/LoadSway.html">Example</a></h2>
+</blockquote>
+</blockquote>
+
+</body>
+</html>
